@@ -1,0 +1,153 @@
+{% extends "tutorias/base.html" %}
+{% block title %}{{ titulo }} | Configuración UTS{% endblock %}
+{% block content %}
+    <header class="page-title">
+        <div>
+            <span class="section-label">Coordinación</span>
+            <h1>Configuración</h1>
+            <p>Espacios, materias y programación semestral</p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            <a class="btn btn-outline-primary"
+               href="{% url 'generar_franjas' %}"><i data-lucide="calendar-plus"></i>Generar franjas</a>
+            <a class="btn btn-outline-primary"
+               href="{% url 'copiar_horarios' %}"><i data-lucide="copy"></i>Reutilizar horarios</a>
+        </div>
+    </header>
+    <nav class="config-tabs" aria-label="Configuración">
+        {% for key, label in tabs %}
+            <a href="{% url 'configurar' key %}{% if periodo_seleccionado %}{% if key == 'clases' or key == 'franjas' %}?periodo={{ periodo_seleccionado.pk }}{% endif %}{% endif %}" {% if key == tipo %}class="active" aria-current="page"{% endif %}>{{ label }}</a>
+        {% endfor %}
+    </nav>
+    <div class="section-heading">
+        <h2>{{ titulo }}</h2>
+        {% if crear %}
+            <a class="btn btn-primary"
+               href="{% url 'crear_configuracion' tipo %}{% if periodo_seleccionado %}?periodo={{ periodo_seleccionado.pk }}{% endif %}"><i data-lucide="plus"></i>Agregar</a>
+        {% endif %}
+    </div>
+    {% if por_semestre %}
+        <form method="get" class="subject-filter">
+            <label for="semestre-horarios">Semestre académico</label>
+            <select name="periodo" id="semestre-horarios" class="form-select" required>
+                <option value="">Selecciona un semestre</option>
+                {% for periodo in periodos %}
+                    <option value="{{ periodo.pk }}"
+                            {% if periodo_seleccionado.pk == periodo.pk %}selected{% endif %}>{{ periodo.nombre }}{% if not periodo.activo %} · Inactivo{% endif %}</option>
+                {% endfor %}
+            </select>
+            <button class="btn btn-outline-primary"
+                    type="submit"><i data-lucide="filter"></i>Ver horarios</button>
+        </form>
+        {% if error_periodo %}<p class="alert alert-danger"
+   role="alert">{{ error_periodo }}</p>{% endif %}
+        {% if periodo_seleccionado %}
+            <p>{{ periodo_seleccionado.nombre }} · {{ pagina.paginator.count }} registros{% if pagina.paginator.count %} · Mostrando {{ pagina.start_index }}–{{ pagina.end_index }}{% endif %}</p>
+        {% else %}
+            <p class="empty-state">Selecciona un semestre para consultar sus {% if tipo == "clases" %}clases fijas{% else %}franjas de reserva{% endif %}.</p>
+        {% endif %}
+    {% endif %}
+    {% if tipo == "materias" or tipo == "laboratorios" %}
+        <form method="get" class="subject-filter">
+            <label for="estado-materias">Estado</label>
+            <select name="estado" id="estado-materias" class="form-select">
+                <option value="activas"
+                        {% if estado == 'activas' %}selected{% endif %}>Activos</option>
+                <option value="inactivas" {% if estado == 'inactivas' %}selected{% endif %}>
+                    Inactivos / historial
+                </option>
+                <option value="todas" {% if estado == 'todas' %}selected{% endif %}>Todas</option>
+            </select>
+            <button class="btn btn-outline-primary" type="submit">
+                <i data-lucide="filter"></i>Filtrar
+            </button>
+        </form>
+    {% endif %}
+    {% if not por_semestre or periodo_seleccionado %}
+        <div class="table-responsive data-surface">
+            <table class="table{% if por_semestre %} schedule-table{% endif %}">
+                <thead>
+                    <tr>
+                        {% for header in headers %}<th>{{ header|capfirst }}</th>{% endfor %}
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                        <tr>
+                            {% for value in row.values %}<td>{{ value }}</td>{% endfor %}
+                            <td>
+                                <div class="row-actions">
+                                    <a class="icon-button"
+                                       title="Editar"
+                                       aria-label="Editar registro {{ row.pk }}"
+                                       href="{% url 'editar_configuracion' tipo row.pk %}{% if periodo_seleccionado %}?periodo={{ periodo_seleccionado.pk }}&amp;pagina={{ pagina.number }}{% endif %}"><i data-lucide="pencil"></i></a>
+                                    {% if tipo == "clases" or tipo == "franjas" %}
+                                        <form method="post"
+                                              action="{% url 'eliminar_horario' tipo row.pk %}?pagina={{ pagina.number }}"
+                                              data-confirm="¿Eliminar este horario?">
+                                            {% csrf_token %}
+                                            <button class="icon-button danger"
+                                                    title="Eliminar"
+                                                    aria-label="Eliminar horario {{ row.pk }}">
+                                                <i data-lucide="trash-2"></i>
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                    {% if tipo == "materias" %}
+                                        <a class="icon-button danger"
+                                           title="Eliminar materia"
+                                           aria-label="Eliminar materia {{ row.pk }}"
+                                           href="{% url 'eliminar_materia' row.pk %}"><i data-lucide="trash-2"></i></a>
+                                    {% endif %}
+                                    {% if tipo == "semestres" %}
+                                        <a class="icon-button danger"
+                                           title="Eliminar o cerrar semestre"
+                                           aria-label="Eliminar o cerrar semestre {{ row.pk }}"
+                                           href="{% url 'eliminar_semestre' row.pk %}"><i data-lucide="trash-2"></i></a>
+                                    {% endif %}
+                                    {% if tipo == "laboratorios" %}
+                                        <a class="icon-button danger"
+                                           title="Retirar o eliminar laboratorio"
+                                           aria-label="Retirar laboratorio {{ row.pk }}"
+                                           href="{% url 'retirar_laboratorio' row.pk %}"><i data-lucide="trash-2"></i></a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="9" class="empty-state">{% if por_semestre %}No hay horarios registrados para este semestre.{% else %}No hay registros.{% endif %}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+    {% if pagina.has_other_pages %}
+        <nav class="d-flex align-items-center justify-content-between gap-2 flex-wrap mt-3"
+             aria-label="Páginas de horarios">
+            {% if pagina.has_previous %}
+                <a class="icon-button"
+                   title="Página anterior"
+                   aria-label="Página anterior"
+                   href="?periodo={{ periodo_seleccionado.pk }}&amp;pagina={{ pagina.previous_page_number }}"><i data-lucide="chevron-left"></i></a>
+            {% else %}
+                <button class="icon-button" disabled aria-label="Página anterior">
+                    <i data-lucide="chevron-left"></i>
+                </button>
+            {% endif %}
+            <span>Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>
+            {% if pagina.has_next %}
+                <a class="icon-button"
+                   title="Página siguiente"
+                   aria-label="Página siguiente"
+                   href="?periodo={{ periodo_seleccionado.pk }}&amp;pagina={{ pagina.next_page_number }}"><i data-lucide="chevron-right"></i></a>
+            {% else %}
+                <button class="icon-button" disabled aria-label="Página siguiente">
+                    <i data-lucide="chevron-right"></i>
+                </button>
+            {% endif %}
+        </nav>
+    {% endif %}
+{% endblock %}

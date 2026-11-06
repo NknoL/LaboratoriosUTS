@@ -1,0 +1,10 @@
+[Unit]
+Description=Respaldo diario de Laboratorios UTS
+
+[Timer]
+OnCalendar=*-*-* 02:30:00 America/Bogota
+Persistent=true
+Unit=laboratorios-respaldo.service
+
+[Install]
+WantedBy=timers.target

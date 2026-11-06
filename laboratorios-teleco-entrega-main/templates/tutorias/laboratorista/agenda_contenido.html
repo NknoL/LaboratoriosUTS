@@ -1,0 +1,79 @@
+<div class="agenda-resumen">
+    <h2>{{ fecha|date:"l, j \d\e F \d\e Y"|capfirst }}</h2>
+    <span>{{ grupos|length }} horario{{ grupos|length|pluralize:"s" }} · {{ total_estudiantes }} estudiante{{ total_estudiantes|pluralize:"s" }} con aprobación</span>
+</div>
+{% for grupo in grupos %}
+    <section class="agenda-turno agenda-{{ grupo.estado }}"
+             aria-labelledby="titulo-{{ grupo.id }}">
+        <div class="agenda-turno-encabezado">
+            <div class="agenda-hora">
+                <strong>{{ grupo.hora_inicio|time:"H:i" }} – {{ grupo.hora_fin|time:"H:i" }}</strong>
+                <span class="status agenda-estado-{{ grupo.estado }}">{{ grupo.estado_nombre }}</span>
+            </div>
+            <div class="agenda-laboratorio">
+                <h3 id="titulo-{{ grupo.id }}">{{ grupo.laboratorio.nombre }}</h3>
+                <p>{{ grupo.laboratorio.ubicacion|default:"Ubicación sin registrar" }}</p>
+                {% if not grupo.laboratorio.activo %}<span class="status wine">Laboratorio inactivo: consultar a coordinación</span>{% endif %}
+            </div>
+            <span class="status state-CONFIRMADA">Aceptada por el coordinador</span>
+        </div>
+        <details id="{{ grupo.id }}" class="agenda-estudiantes">
+            <summary>{{ grupo.reservas|length }} estudiante{{ grupo.reservas|length|pluralize:"s" }} autorizado{{ grupo.reservas|length|pluralize:"s" }}</summary>
+            <ul class="agenda-inscritos">
+                {% for reserva in grupo.reservas %}
+                    <li>
+                        <div class="agenda-persona">
+                            <strong>{{ reserva.estudiante.get_full_name|default:reserva.estudiante.username }}</strong>
+                            <span>{{ reserva.materia.nombre }} · {{ reserva.materia.codigo }}</span>
+                        </div>
+                        <dl class="agenda-datos">
+                            <div>
+                                <dt>Cédula</dt>
+                                <dd>
+                                    {{ reserva.estudiante.perfil.cedula|default:"Sin registrar" }}
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>Correo institucional</dt>
+                                <dd>
+                                    {{ reserva.estudiante.email|default:"Sin registrar" }}
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>Programa y semestre</dt>
+                                <dd>
+                                    {{ reserva.estudiante.perfil.get_programa_display|default:"Sin registrar" }} · {{ reserva.estudiante.perfil.semestre|default:"Sin registrar" }}
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>Periodo académico</dt>
+                                <dd>
+                                    {{ reserva.franja.periodo.nombre }}
+                                </dd>
+                            </div>
+                            <div><dt>Aprobó</dt><dd>{% if reserva.decidida_por %}{{ reserva.decidida_por.get_full_name|default:reserva.decidida_por.username }}{% else %}Coordinación{% endif %}</dd></div>
+                            <div>
+                                <dt>Fecha de aprobación</dt>
+                                <dd>
+                                    {{ reserva.decidida_el|date:"d/m/Y H:i"|default:"Sin registro" }}
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>Solicitud</dt>
+                                <dd>
+                                    #{{ reserva.pk }}
+                                </dd>
+                            </div>
+                            {% if reserva.motivo_decision %}<div class="agenda-observacion"><dt>Observación de coordinación</dt><dd>{{ reserva.motivo_decision }}</dd></div>{% endif %}
+                        </dl>
+                    </li>
+                {% endfor %}
+            </ul>
+        </details>
+    </section>
+{% empty %}
+    <div class="empty-state">
+        <h3>No hay préstamos aprobados</h3>
+        <p>No se registran estudiantes autorizados para esta fecha y laboratorio.</p>
+    </div>
+{% endfor %}

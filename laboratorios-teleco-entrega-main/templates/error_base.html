@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}Laboratorios UTS{% endblock %}</title>
+        <style>
+            body { margin: 0; font: 1rem/1.6 system-ui, sans-serif; color: #183b2d; background: #e9f0eb; }
+            header { padding: 1rem 6%; color: white; background: #24553e; border-bottom: 4px solid #94133f; }
+            main { max-width: 42rem; margin: 4rem auto; padding: 0 1.5rem; }
+            h1 { font-size: 1.75rem; line-height: 1.25; overflow-wrap: anywhere; }
+            a { color: #75151a; text-underline-offset: .2em; }
+            a:focus-visible { outline: 3px solid #94133f; outline-offset: 4px; }
+        </style>
+    </head>
+    <body>
+        <header>
+            Laboratorios UTS
+        </header>
+        <main>
+            {% block content %}{% endblock %}
+            <p><a href="/">Volver al inicio</a></p>
+        </main>
+    </body>
+</html>

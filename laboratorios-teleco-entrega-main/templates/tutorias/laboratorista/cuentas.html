@@ -1,0 +1,58 @@
+{% extends "tutorias/base.html" %}
+{% block title %}Laboratoristas | Laboratorios UTS{% endblock %}
+{% block content %}
+    <div class="page-title">
+        <div>
+            <span class="section-label">Coordinación</span>
+            <h1>Laboratoristas</h1>
+        </div>
+        <a class="btn btn-primary"
+           href="{% url 'crear_laboratorista' %}"><i data-lucide="user-plus"></i>Crear cuenta</a>
+    </div>
+    <div class="data-surface table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Nombre y usuario</th>
+                    <th scope="col">Correo</th>
+                    <th scope="col">Acceso</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cuenta in pagina %}
+                    <tr>
+                        <td><strong>{{ cuenta.get_full_name }}</strong><small>{{ cuenta.username }}</small></td>
+                        <td>{{ cuenta.email }}</td>
+                        <td>
+                            {% if cuenta.is_active %}<span class="status success">Habilitado</span>{% else %}<span class="status wine">Deshabilitado</span>{% endif %}
+                            {% if cuenta.perfil.debe_cambiar_clave %}<small>Cambio de contraseña pendiente</small>{% endif %}
+                        </td>
+                        <td>
+                            <div class="row-actions">
+                                <a href="{% url 'editar_laboratorista' cuenta.pk %}"
+                                   class="icon-button"
+                                   title="Editar {{ cuenta.username }}"
+                                   aria-label="Editar {{ cuenta.username }}"><i data-lucide="pencil"></i></a>
+                                <a href="{% url 'clave_laboratorista' cuenta.pk %}"
+                                   class="icon-button"
+                                   title="Restablecer acceso de {{ cuenta.username }}"
+                                   aria-label="Restablecer acceso de {{ cuenta.username }}"><i data-lucide="key-round"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+{% empty %}<tr><td colspan="4"
+    class="empty-state">No hay cuentas de laboratorista registradas.</td></tr>{% endfor %}
+    </tbody>
+    </table>
+    </div>
+    {% if pagina.has_other_pages %}
+        <nav class="section-heading" aria-label="Páginas de laboratoristas">
+            {% if pagina.has_previous %}<a class="btn btn-outline-primary"
+   href="?page={{ pagina.previous_page_number }}">Anterior</a>{% endif %}
+            <span>Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>
+            {% if pagina.has_next %}<a class="btn btn-outline-primary"
+   href="?page={{ pagina.next_page_number }}">Siguiente</a>{% endif %}
+        </nav>
+    {% endif %}
+{% endblock %}

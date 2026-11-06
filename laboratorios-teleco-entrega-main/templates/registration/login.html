@@ -1,0 +1,47 @@
+{% extends "tutorias/base.html" %}
+{% block title %}Ingresar | Laboratorios UTS{% endblock %}
+{% block content %}
+    <section class="access-layout">
+        <div class="access-brand">
+            <span class="eyebrow">Telecomunicaciones</span>
+            <h1>Laboratorios UTS</h1>
+            <p>Acceso a espacios de práctica</p>
+            <div class="access-labs">
+                <span>01 · Telecomunicaciones</span><span>02 · Radiocomunicaciones</span><span>03 · Cisco</span><span>04 · IoT</span><span>05 · Telemática</span>
+            </div>
+        </div>
+        <div class="access-form">
+            <span class="section-label">Comunidad UTS</span>
+            <h2>Iniciar sesión</h2>
+            <form method="post">
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>
+                {% endif %}
+                <div class="field">
+                    <label for="{{ form.username.id_for_label }}">Cédula o usuario</label>
+                    {{ form.username }}{{ form.username.errors }}
+                </div>
+                <div class="field">
+                    <label for="{{ form.password.id_for_label }}">Contraseña</label>
+                    {{ form.password }}{{ form.password.errors }}
+                </div>
+                {% if recuperacion_demo %}
+                    {% include "registration/aviso_clave_demo.html" with password_inputs="id_password" %}
+                {% endif %}
+                <input type="hidden" name="next" value="{{ next }}">
+                <button class="btn btn-primary w-100">
+                    <i data-lucide="log-in"></i>Ingresar
+                </button>
+            </form>
+            {% if recuperacion_habilitada %}
+                <p class="access-link">
+                    <a href="{% url 'password_reset' %}">Olvidé mi contraseña</a>
+                </p>
+            {% endif %}
+            <p class="access-link">
+                ¿Aún no tienes cuenta? <a href="{% url 'registro_estudiante' %}">Registro estudiantil</a>
+            </p>
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "tutorias/base.html" %}
+{% block title %}Eliminar materia | UTS{% endblock %}
+{% block content %}
+    <header class="page-title">
+        <div>
+            <span class="section-label">Coordinación</span>
+            <h1>Eliminar materia</h1>
+        </div>
+    </header>
+    <h2>{{ materia.codigo }} · {{ materia.nombre }}</h2>
+    {% if futuras %}
+        <p class="alert alert-warning">
+            Esta materia tiene reservas pendientes o confirmadas futuras. Revisa esas solicitudes antes de retirarla.
+        </p>
+    {% elif protegida %}
+        <p>
+            Esta materia tiene clases o reservas asociadas. Se retirará de las opciones disponibles, conservando las clases fijas y el historial.
+        </p>
+    {% else %}
+        <p>
+            La materia se eliminará del catálogo y de los laboratorios asociados. Esta acción no se puede deshacer.
+        </p>
+    {% endif %}
+    <form method="post" class="row-actions">
+        {% csrf_token %}
+        <a class="btn btn-outline-primary"
+           href="{% url 'configurar' 'materias' %}">Volver</a>
+        {% if not futuras %}
+            <button type="submit" class="btn btn-danger">
+                <i data-lucide="trash-2"></i>
+                {% if protegida %}
+                    Retirar materia
+                {% else %}
+                    Eliminar materia
+                {% endif %}
+            </button>
+        {% endif %}
+    </form>
+{% endblock %}

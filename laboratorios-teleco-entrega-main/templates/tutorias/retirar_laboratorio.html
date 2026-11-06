@@ -1,0 +1,13 @@
+{% extends "tutorias/base.html" %}
+{% block title %}Retirar laboratorio | Laboratorios UTS{% endblock %}
+{% block content %}
+    <header class="page-title"><h1>{% if protegido %}Retirar laboratorio{% else %}Eliminar laboratorio{% endif %}</h1></header>
+    <div class="form-surface">
+        <h2>{{ laboratorio.nombre }}</h2>
+    {% if vigentes %}<p class="alert alert-warning">Hay préstamos futuros o en curso. Resuélvelos antes de retirar este laboratorio.</p>
+{% elif protegido %}<p>Se retirará del servicio, conservando clases, franjas y reservas históricas. Sus franjas quedarán desactivadas, incluso si después reactivas el laboratorio.</p>
+{% else %}<p>Este laboratorio no tiene programación ni reservas. Se eliminará definitivamente, junto con sus asociaciones a materias.</p>{% endif %}
+<form method="post" class="form-actions">{% csrf_token %}<a class="btn btn-outline-primary"
+   href="{% url 'configurar' 'laboratorios' %}">Volver</a>{% if not vigentes %}<button class="btn btn-danger"><i data-lucide="trash-2"></i>{% if protegido %}Retirar del servicio{% else %}Eliminar laboratorio{% endif %}</button>{% endif %}</form>
+</div>
+{% endblock %}

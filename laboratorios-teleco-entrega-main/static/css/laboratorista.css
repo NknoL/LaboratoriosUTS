@@ -1,0 +1,35 @@
+.agenda-filtros .field { flex: 1; min-width: 180px; }
+.agenda-actualizacion { min-height: 20px; font-size: 12px; color: var(--muted); }
+.agenda-resumen { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 12px; margin: 24px 0 16px; }
+.agenda-resumen h2 { font-size: 19px; margin: 0; }
+.agenda-resumen > span { font-size: 13px; color: var(--muted); }
+.agenda-turno { border-top: 3px solid var(--green-mid); margin-bottom: 24px; background: #f9fbf9; }
+.agenda-turno-encabezado { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; padding: 18px; background: #dce6df; }
+.agenda-hora { flex: 0 0 145px; }
+.agenda-hora strong { display: block; font-size: 17px; margin-bottom: 8px; }
+.agenda-laboratorio { flex: 1; min-width: min(230px, 100%); }
+.agenda-laboratorio h3 { margin: 0 0 5px; font-size: 18px; }
+.agenda-laboratorio p { font-size: 12px; margin: 0; }
+.agenda-en_curso { border-color: var(--magenta); }
+.agenda-en_curso .agenda-turno-encabezado { background: #eddee4; }
+.agenda-finalizada { border-color: #64716a; }
+.agenda-finalizada .agenda-turno-encabezado { background: #e3e7e4; }
+.agenda-estado-proxima { background: #f1e6b6; color: #584900; }
+.agenda-estado-en_curso { background: #900036; color: white; }
+.agenda-estudiantes summary { padding: 16px 18px; cursor: pointer; color: var(--green); font-size: 14px; font-weight: 600; }
+.agenda-estudiantes summary:hover { background: #eaf0eb; }
+.agenda-inscritos { list-style: none; padding: 0 18px; margin: 0; }
+.agenda-inscritos > li { padding: 20px 0; border-top: 1px solid var(--line); }
+.agenda-persona strong { display: block; overflow-wrap: anywhere; font-size: 15px; }
+.agenda-persona span { display: block; font-size: 13px; color: var(--wine); margin-top: 5px; overflow-wrap: anywhere; }
+.agenda-datos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 24px; margin: 18px 0 0; }
+.agenda-datos dt { font-size: 11px; color: var(--muted); font-weight: 600; }
+.agenda-datos dd { font-size: 13px; margin: 5px 0 0; overflow-wrap: anywhere; }
+.agenda-observacion { grid-column: 1 / -1; }
+@media (max-width: 1100px) { .agenda-datos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) {
+    .agenda-datos { grid-template-columns: minmax(0, 1fr); }
+    .agenda-turno-encabezado { align-items: flex-start; padding: 16px; gap: 14px; }
+    .agenda-hora { flex-basis: 100%; }
+    .agenda-filtros > a { width: 100%; }
+}

@@ -1,0 +1,23 @@
+{% extends "tutorias/base.html" %}
+{% block title %}Registro | Laboratorios UTS{% endblock %}
+{% block content %}
+    <div class="registration-layout">
+        <header class="page-title">
+            <div>
+                <span class="section-label">Laboratorios UTS</span>
+                <h1>Registro estudiantil</h1>
+                <p>Telecomunicaciones · Tecnología e Ingeniería</p>
+            </div>
+            <a href="{% url 'login' %}" class="btn btn-outline-primary">Ya tengo una cuenta</a>
+        </header>
+        <form method="post" class="form-surface">
+            {% csrf_token %}
+            {% include "tutorias/fields.html" %}
+            <div class="form-actions">
+                <button class="btn btn-primary">
+                    <i data-lucide="user-plus"></i>Crear cuenta
+                </button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

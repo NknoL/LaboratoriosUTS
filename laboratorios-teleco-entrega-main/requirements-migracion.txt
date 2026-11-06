@@ -1,0 +1,3 @@
+# Solo si trasladar_base debe leer un origen PostgreSQL.
+-r requirements.txt
+psycopg[binary]>=3.2,<4

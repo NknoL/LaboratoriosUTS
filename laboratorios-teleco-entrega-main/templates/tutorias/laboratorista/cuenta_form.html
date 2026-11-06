@@ -1,0 +1,13 @@
+{% extends "tutorias/base.html" %}
+{% block title %}{{ titulo }} | Laboratorios UTS{% endblock %}
+{% block content %}
+    <a href="{% url 'laboratoristas' %}"
+       class="back-link"><i data-lucide="arrow-left"></i>Laboratoristas</a>
+    <div class="page-title"><div><span class="section-label">Coordinación</span><h1>{{ titulo }}</h1>{% if cuenta %}<p>{{ cuenta.username }}</p>{% endif %}</div></div>
+    <form method="post" class="form-surface">
+        {% csrf_token %}
+        {% if clave_temporal %}<p class="alert alert-info">La contraseña temporal vence en {{ horas }} horas. El laboratorista deberá cambiarla al ingresar.</p>{% endif %}
+        {% include "tutorias/fields.html" with recuperacion_demo=False %}
+        <div class="form-actions"><a href="{% url 'laboratoristas' %}" class="btn btn-outline-primary">Cancelar</a><button class="btn btn-primary"><i data-lucide="save"></i>Guardar</button></div>
+    </form>
+{% endblock %}

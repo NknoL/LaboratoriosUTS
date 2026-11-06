@@ -1,0 +1,63 @@
+{% extends "tutorias/base.html" %}
+{% block title %}Solicitudes | Coordinación UTS{% endblock %}
+{% block content %}
+    <header class="page-title">
+        <div>
+            <span class="section-label">Autorización de préstamos</span>
+            <h1>Solicitudes de laboratorio</h1>
+            <p>{{ pendientes }} solicitudes pendientes de decisión</p>
+        </div>
+        <a href="{% url 'calendario' %}" class="btn btn-outline-primary"><i data-lucide="calendar-days"></i>Calendario</a>
+    </header>
+    <nav class="config-tabs" aria-label="Estado de solicitudes">
+        {% for value,label in estados %}
+            <a href="?estado={{ value }}"
+               {% if estado == value %}class="active" aria-current="page"{% endif %}>{{ label }}</a>
+        {% endfor %}
+    </nav>
+    <div class="table-responsive data-surface">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Estudiante</th>
+                    <th>Laboratorio / materia</th>
+                    <th>Fecha y hora</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in reservas %}
+                    <tr>
+                        <td>
+                            <strong>{{ r.estudiante.get_full_name|default:r.estudiante.username }}</strong><small>{{ r.estudiante.perfil.cedula }}</small>
+                        </td>
+                        <td>
+                            {{ r.laboratorio.nombre }}<small>{{ r.materia.nombre }}</small>
+                        </td>
+                        <td>
+                            {{ r.fecha|date:"d/m/Y" }}<small>{{ r.hora_inicio|time:"H:i" }} - {{ r.hora_fin|time:"H:i" }}</small>
+                        </td>
+                        <td>
+                            <span class="status state-{{ r.estado }}">{{ r.get_estado_display }}</span>
+                        </td>
+                        <td>
+                            <a href="{% url 'resolver_solicitud' r.pk %}"
+                               class="btn btn-outline-primary btn-sm">
+                                {% if r.estado == "PENDIENTE" %}
+                                    Revisar solicitud
+                                {% else %}
+                                    Ver decisión
+                                {% endif %}
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="empty-state">No hay solicitudes en este estado.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

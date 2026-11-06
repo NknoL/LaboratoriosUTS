@@ -1,0 +1,8 @@
+Django>=5.2,<5.3
+dj-database-url>=3,<4
+django-axes==8.3.1
+# Conector oficial de Django para MySQL/MariaDB. En Linux requiere antes:
+#   sudo apt install python3-dev default-libmysqlclient-dev build-essential pkg-config
+mysqlclient>=2.2,<3
+whitenoise>=6.9,<7
+gunicorn>=23,<24; sys_platform != "win32"

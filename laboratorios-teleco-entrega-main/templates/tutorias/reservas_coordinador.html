@@ -1,0 +1,71 @@
+{% extends "tutorias/base.html" %}
+{% block title %}Reservas | Coordinación UTS{% endblock %}
+{% block content %}
+    <header class="page-title">
+        <div>
+            <span class="section-label">Coordinación</span>
+            <h1>Reservas de laboratorios</h1>
+            <p>Estudiantes inscritos por fecha y horario</p>
+        </div>
+    </header>
+    <form method="get" class="date-toolbar">
+        <div>
+            <label for="{{ form.fecha.id_for_label }}">Fecha</label>
+            {{ form.fecha }}{{ form.fecha.errors }}
+        </div>
+        <button class="btn btn-primary">Consultar</button>
+    </form>
+    <div class="table-responsive data-surface">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Horario</th>
+                    <th>Laboratorio / materia</th>
+                    <th>Estudiante</th>
+                    <th>Cédula</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in reservas %}
+                    <tr>
+                        <td class="nowrap">{{ r.hora_inicio|time:"H:i" }} - {{ r.hora_fin|time:"H:i" }}</td>
+                        <td>
+                            <strong>{{ r.laboratorio.nombre }}</strong><small>{{ r.materia.nombre }}</small>
+                        </td>
+                        <td>{{ r.estudiante.get_full_name|default:r.estudiante.username }}</td>
+                        <td>{{ r.estudiante.perfil.cedula|default:"Pendiente" }}</td>
+                        <td>
+                            <span class="status state-{{ r.estado }}">{{ r.get_estado_display }}</span>
+                        </td>
+                        <td>
+                            <div class="row-actions">
+                                <a class="btn btn-outline-primary btn-sm"
+                                   href="{% url 'resolver_solicitud' r.pk %}">
+                                    {% if r.estado == 'PENDIENTE' %}
+                                        Revisar
+                                    {% else %}
+                                        Detalle
+                                    {% endif %}
+                                </a>
+                                {% if r.activa %}
+                                    <form method="post"
+                                          action="{% url 'cancelar_reserva' r.pk %}"
+                                          data-confirm="¿Cancelar la reserva de este estudiante?">
+                                        {% csrf_token %}
+                                        <button class="btn btn-outline-danger btn-sm">Cancelar</button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" class="empty-state">No hay reservas en esta fecha.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

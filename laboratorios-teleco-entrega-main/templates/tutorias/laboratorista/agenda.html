@@ -1,0 +1,48 @@
+{% extends "tutorias/base.html" %}
+{% load static %}
+{% block title %}Préstamos aprobados | Laboratorios UTS{% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/laboratorista.css' %}">
+{% endblock %}
+{% block content %}
+    <div class="page-title">
+        <div>
+            <span class="section-label">Laboratorista</span>
+            <h1>Préstamos aprobados</h1>
+            <p>Agenda de apertura de laboratorios</p>
+        </div>
+        <button type="button"
+                class="icon-button"
+                id="actualizar-agenda"
+                hidden
+                title="Actualizar agenda"
+                aria-label="Actualizar agenda">
+            <i data-lucide="refresh-cw"></i>
+        </button>
+    </div>
+    <form method="get" class="date-toolbar agenda-filtros" id="filtros-agenda">
+        {% for field in form %}
+            <div class="field">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}{{ field.errors }}
+            </div>
+        {% endfor %}
+        <button class="btn btn-primary"><i data-lucide="search"></i>Consultar</button>
+        <a href="{% url 'agenda_laboratorista' %}"
+           class="btn btn-outline-primary">Hoy</a>
+    </form>
+    <p id="estado-agenda"
+       class="agenda-actualizacion"
+       role="status"
+       aria-live="polite"></p>
+    <div id="agenda-contenido"
+         data-url="{% url 'agenda_laboratorista_datos' %}"
+         {% if form.errors %}data-invalid="true"{% endif %}>
+        {% if not form.errors %}
+            {% include "tutorias/laboratorista/agenda_contenido.html" %}
+        {% endif %}
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'js/agenda-laboratorista.js' %}" defer></script>
+{% endblock %}

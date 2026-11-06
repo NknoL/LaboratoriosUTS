@@ -1,0 +1,44 @@
+{% if form.non_field_errors %}
+    <div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>
+{% endif %}
+<div class="form-grid">
+    {% for field in form %}
+        <div class="field {% if field.name == 'materias' or field.name == 'laboratorios' or field.name == 'dias' or field.name == 'notas_revision' or field.name == 'password1' or field.name == 'password2' %}field-wide{% endif %}">
+            {% if field.name == "materias" or field.name == "laboratorios" or field.name == "dias" %}
+                <fieldset class="subject-picker">
+                    <legend>{{ field.label }}{% if field.field.required %}<span class="required-mark" aria-hidden="true">*</span>{% endif %}</legend>
+                    <div class="subject-options">
+                        {% for option in field %}
+                            <label class="subject-option" for="{{ option.id_for_label }}">
+                                {{ option.tag }}<span>{{ option.choice_label }}</span>
+                            </label>
+                        {% empty %}
+                            <p>No hay opciones disponibles.</p>
+                        {% endfor %}
+                    </div>
+                </fieldset>
+            {% elif field.field.widget.input_type == "checkbox" %}
+                <div class="form-check">
+                    {{ field }}
+                    <label class="form-check-label"
+                           for="{{ field.id_for_label }}">{{ field.label }}</label>
+                </div>
+            {% else %}
+                <label for="{{ field.id_for_label }}">
+                    {{ field.label }}
+                    {% if field.field.required %}<span class="required-mark"
+      aria-hidden="true">*</span>{% endif %}
+                </label>
+                {{ field }}
+            {% endif %}
+            {% if field.help_text %}
+                <div class="form-text"
+                     id="{{ field.auto_id }}_helptext">{{ field.help_text|safe }}</div>
+            {% endif %}
+            {{ field.errors }}
+            {% if recuperacion_demo and field.name == "password1" %}
+                {% include "registration/aviso_clave_demo.html" with password_inputs="id_password1 id_password2" %}
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>

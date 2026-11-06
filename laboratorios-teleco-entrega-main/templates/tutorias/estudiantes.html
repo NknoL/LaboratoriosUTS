@@ -1,0 +1,60 @@
+{% extends "tutorias/base.html" %}
+{% block title %}Estudiantes | Laboratorios UTS{% endblock %}
+{% block content %}
+    <header class="page-title">
+        <div>
+            <span class="section-label">Revisión de matrícula</span>
+            <h1>Estudiantes</h1>
+            <p>Registro local · La revisión no bloquea las reservas</p>
+        </div>
+    </header>
+    <form class="date-toolbar" method="get">
+        <div class="search-field">
+            <label for="q">Nombre, cédula o correo</label>
+            <input class="form-control" name="q" id="q" value="{{ q }}" type="search">
+        </div>
+        <button class="btn btn-primary">
+            <i data-lucide="search"></i>Buscar
+        </button>
+    </form>
+    <div class="table-responsive data-surface">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Estudiante</th>
+                    <th>Cédula</th>
+                    <th>Correo institucional</th>
+                    <th>Programa / semestre</th>
+                    <th>Revisión</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for perfil in estudiantes %}
+                    <tr>
+                        <td>
+                            <strong>{{ perfil.usuario.get_full_name|default:perfil.usuario.username }}</strong>
+                            {% if not perfil.completo %}<small>Datos por completar</small>{% endif %}
+                        </td>
+                        <td>{{ perfil.cedula|default:"Pendiente" }}</td>
+                        <td>{{ perfil.usuario.email|default:"Pendiente" }}</td>
+                        <td>
+                            {{ perfil.get_programa_display|default:"Pendiente" }}<small>Semestre {{ perfil.semestre|default:"—" }}</small>
+                        </td>
+                        <td>
+                            <span class="status {% if perfil.revision == 'VALIDADA' %}success{% else %}wine{% endif %}">{{ perfil.get_revision_display }}</span>
+                        </td>
+                        <td>
+                            <a href="{% url 'revisar_estudiante' perfil.pk %}"
+                               class="btn btn-outline-primary btn-sm">Revisar</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" class="empty-state">No hay estudiantes con esos datos.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

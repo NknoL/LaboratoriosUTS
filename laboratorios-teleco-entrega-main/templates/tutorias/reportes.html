@@ -1,0 +1,92 @@
+{% extends "tutorias/base.html" %}
+{% block title %}Coordinación | Laboratorios UTS{% endblock %}
+{% block content %}
+    <header class="page-title">
+        <div>
+            <span class="section-label">Coordinación de Telecomunicaciones</span>
+            <h1>Resumen de laboratorios</h1>
+            <p>Actividad diaria y consolidado semanal</p>
+        </div>
+        <a href="{% url 'reservas_coordinador' %}" class="btn btn-primary"><i data-lucide="calendar-days"></i>Ver reservas</a>
+    </header>
+    <form method="get" class="date-toolbar">
+        <div>
+            <label for="{{ form.fecha.id_for_label }}">Día de consulta</label>
+            {{ form.fecha }}{{ form.fecha.errors }}
+        </div>
+        <button class="btn btn-primary">Consultar</button>
+        <a class="review-link" href="{% url 'estudiantes' %}"><i data-lucide="users"></i>{{ pendientes|default:0 }} matrículas pendientes</a>
+    </form>
+    {% if fecha %}
+        <section class="metrics-grid">
+            <div class="stat">
+                <i data-lucide="log-in"></i><span>Estudiantes que consultaron</span><strong>{{ visitas }}</strong><small>Personas únicas durante el día</small>
+            </div>
+            <div class="stat wine">
+                <i data-lucide="calendar-check"></i><span>Reservas programadas</span><strong>{{ diario.reservas }}</strong><small>Confirmadas para {{ fecha|date:"d/m/Y" }}</small>
+            </div>
+            <div class="stat magenta">
+                <i data-lucide="monitor"></i><span>Laboratorio más reservado</span><strong class="stat-text">{{ diario.laboratorios.0.laboratorio__nombre|default:"Sin reservas" }}</strong><small>{{ diario.laboratorios.0.total|default:0 }} reservas</small>
+            </div>
+            <div class="stat lime">
+                <i data-lucide="book-open"></i><span>Materia más solicitada</span><strong class="stat-text">{{ diario.materias.0.materia__nombre|default:"Sin reservas" }}</strong><small>{{ diario.materias.0.total|default:0 }} reservas</small>
+            </div>
+        </section>
+        <section class="weekly-section">
+            <div class="section-heading">
+                <div>
+                    <span class="section-label">Consolidado de lunes a viernes</span>
+                    <h2>Semana del {{ lunes|date:"d/m" }} al {{ viernes|date:"d/m/Y" }}</h2>
+                </div>
+                <span class="status wine">{{ semanal.reservas }} reservas · {{ visitas_semana }} visitantes únicos</span>
+            </div>
+            <div class="report-grid">
+                <div class="table-responsive data-surface">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Día</th>
+                                <th>Consultaron</th>
+                                <th>Con reserva</th>
+                                <th>Reservas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for fila in filas %}
+                                <tr>
+                                    <td>{{ fila.fecha|date:"l d/m" }}</td>
+                                    <td>{{ fila.visitas }}</td>
+                                    <td>{{ fila.estudiantes }}</td>
+                                    <td>
+                                        <strong>{{ fila.reservas }}</strong>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="ranking">
+                    <h3>Laboratorios de la semana</h3>
+                    {% for item in semanal.laboratorios %}
+                        <div class="rank-row">
+                            <span>{{ item.laboratorio__nombre }}</span><strong>{{ item.total }}</strong>
+                        </div>
+                    {% empty %}
+                        <p class="text-secondary">Sin reservas para esta semana.</p>
+                    {% endfor %}
+                    <h3 class="mt-4">Materias de la semana</h3>
+                    {% for item in semanal.materias|slice:":5" %}
+                        <div class="rank-row">
+                            <span>{{ item.materia__nombre }}</span><strong>{{ item.total }}</strong>
+                        </div>
+                    {% empty %}
+                        <p class="text-secondary">Sin solicitudes.</p>
+                    {% endfor %}
+                </div>
+            </div>
+            <p class="report-note">
+                Uso medido por reservas confirmadas para la fecha de práctica, no por asistencia física. Las canceladas se excluyen. Los visitantes se cuentan una vez por día y una vez en el total semanal.
+            </p>
+        </section>
+    {% endif %}
+{% endblock %}

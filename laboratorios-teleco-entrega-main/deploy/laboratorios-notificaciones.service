@@ -1,0 +1,26 @@
+[Unit]
+Description=Laboratorios UTS - avisos pendientes
+After=network.target mysql.service mariadb.service
+
+[Service]
+User=laboratorios
+Group=laboratorios
+WorkingDirectory=/srv/laboratorios
+EnvironmentFile=/etc/laboratorios/laboratorios.env
+Environment=DJANGO_ENV=production
+Environment=UTS_ENV_FILE=/etc/laboratorios/laboratorios.env
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/srv/laboratorios/venv/bin/python manage.py procesar_notificaciones
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

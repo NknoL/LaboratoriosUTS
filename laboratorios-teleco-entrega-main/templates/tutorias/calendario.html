@@ -1,0 +1,59 @@
+{% extends "tutorias/base.html" %}
+{% load static %}
+{% block title %}Calendario | Laboratorios UTS{% endblock %}
+{% block content %}
+    <header class="page-title">
+        <div>
+            <span class="section-label">Programación semestral</span>
+            <h1>Calendario de laboratorios</h1>
+            <p>Clases fijas, franjas de préstamo y solicitudes</p>
+        </div>
+        <a class="btn btn-outline-primary"
+           href="{% url 'configurar' 'franjas' %}{% if config %}?periodo={{ periodo.pk }}{% endif %}"><i data-lucide="settings-2"></i>Gestionar horarios</a>
+    </header>
+    <form method="get" class="calendar-filters">
+        {% for field in form %}
+            <div class="field">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}{{ field.errors }}
+            </div>
+        {% endfor %}
+        <button class="btn btn-primary">Consultar</button>
+    </form>
+    {% if config %}
+        {% if aviso_oferta %}<p class="alert alert-warning" role="status">{{ aviso_oferta }}</p>{% endif %}
+        <div class="section-heading">
+            <h2>{{ lab.nombre }}</h2>
+            <div class="row-actions">
+                <a class="btn btn-outline-primary btn-sm"
+                   href="{% url 'crear_configuracion' 'clases' %}?laboratorio={{ lab.pk }}&periodo={{ periodo.pk }}">Agregar clase</a><a class="btn btn-primary btn-sm"
+   href="{% url 'crear_configuracion' 'franjas' %}?laboratorio={{ lab.pk }}&periodo={{ periodo.pk }}"><i data-lucide="plus"></i>Agregar franja</a>
+            </div>
+        </div>
+        <div class="calendar-legend">
+            <span class="legend-libre">Disponible</span><span class="legend-clase">Clase fija</span><span class="legend-pendiente">Con pendientes</span><span class="legend-confirmada">Con confirmadas</span><span class="legend-cerrada">Cerrada / pasada</span>
+        </div>
+        <p id="calendar-message" role="status" aria-live="polite"></p>
+        <div class="calendar-surface">
+            <div id="semester-calendar"></div>
+        </div>
+        {{ config|json_script:"calendar-config" }}
+        <dialog id="calendar-detail">
+            <form method="dialog">
+                <button class="icon-button dialog-close" aria-label="Cerrar">
+                    <i data-lucide="x"></i>
+                </button>
+            </form>
+            <h2 id="event-heading">Franja de préstamo</h2>
+            <p id="event-time"></p>
+            <p id="event-summary"></p>
+            <p id="event-reason"></p>
+            <div class="dialog-actions">
+                <a id="event-edit" class="btn btn-outline-primary">Editar horario</a><a id="event-reservations" class="btn btn-primary">Ver solicitudes</a>
+            </div>
+        </dialog>
+    {% endif %}
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'vendor/fullcalendar.min.js' %}" defer></script><script src="{% static 'js/calendario.js' %}" defer></script>
+{% endblock %}

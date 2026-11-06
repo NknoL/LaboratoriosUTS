@@ -1,0 +1,12 @@
+{% extends "tutorias/base.html" %}
+{% block title %}Solicitud recibida | UTS{% endblock %}
+{% block content %}
+    <div class="registration-layout form-surface">
+        <h1>Solicitud recibida</h1>
+        <p>
+            Si los datos corresponden a una cuenta estudiantil activa, recibirás un enlace en su correo registrado para restablecer la contraseña. Revisa también la carpeta de correo no deseado.
+        </p>
+        <p>Si has realizado varias solicitudes, espera 15 minutos antes de intentar nuevamente.</p>
+        <a href="{% url 'login' %}" class="btn btn-primary">Volver al inicio de sesión</a>
+    </div>
+{% endblock %}

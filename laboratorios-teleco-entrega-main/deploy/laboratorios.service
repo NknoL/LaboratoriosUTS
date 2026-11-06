@@ -1,0 +1,30 @@
+# /etc/systemd/system/laboratorios.service
+# sudo systemctl daemon-reload && sudo systemctl enable --now laboratorios
+[Unit]
+Description=Laboratorios UTS (Django + Gunicorn)
+After=network.target mysql.service mariadb.service
+
+[Service]
+User=laboratorios
+Group=laboratorios
+WorkingDirectory=/srv/laboratorios
+EnvironmentFile=/etc/laboratorios/laboratorios.env
+Environment=DJANGO_ENV=production
+Environment=UTS_ENV_FILE=/etc/laboratorios/laboratorios.env
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=PYTHONUNBUFFERED=1
+# Sin URI en el registro de acceso: las rutas de recuperacion contienen tokens.
+# %% escapa los especificadores de systemd antes de pasarlos a Gunicorn.
+ExecStart=/srv/laboratorios/venv/bin/gunicorn tutorias_uts.wsgi:application --bind 127.0.0.1:8000 --workers 2 --threads 2 --timeout 60 --access-logfile - --access-logformat "%%(m)s %%(s)s %%(L)s"
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

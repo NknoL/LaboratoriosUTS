@@ -1,0 +1,130 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#132f20">
+        <title>
+            {% block title %}Laboratorios UTS{% endblock %}
+        </title>
+        <link rel="stylesheet" href="{% static 'vendor/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/app.css' %}">
+        {% block styles %}{% endblock %}
+    </head>
+    <body class="{% if user.is_authenticated %}workspace{% else %}public-page{% endif %}">
+        <a class="skip-link" href="#contenido">Saltar al contenido</a>
+        {% if user.is_authenticated %}
+            <aside class="sidebar" id="sidebar">
+                <a class="identity"
+                   href="{% url 'dashboard' %}"
+                   aria-label="Laboratorios UTS, inicio">
+                    <span class="brand-logo-viewport">
+                        <img src="{% static 'img/logo-uts.png' %}"
+                             alt="Unidades Tecnológicas de Santander">
+                    </span>
+                </a>
+                <div class="sidebar-title">
+                    Laboratorios UTS<span>Telecomunicaciones</span>
+                </div>
+                <nav aria-label="Navegación principal">
+                    {% if rol_usuario == ROL_COORDINADOR %}
+                        <a href="{% url 'solicitudes' %}"
+                           class="{% if request.resolver_match.url_name == 'solicitudes' or request.resolver_match.url_name == 'resolver_solicitud' %}active{% endif %}"><i data-lucide="clipboard-check"></i>Solicitudes</a>
+                        <a href="{% url 'calendario' %}"
+                           class="{% if request.resolver_match.url_name == 'calendario' %}active{% endif %}"><i data-lucide="calendar-days"></i>Calendario</a>
+                        <a href="{% url 'reportes' %}"
+                           class="{% if request.resolver_match.url_name == 'reportes' %}active{% endif %}"><i data-lucide="chart-no-axes-combined"></i>Resumen y reportes</a>
+                        <a href="{% url 'reservas_coordinador' %}"
+                           class="{% if request.resolver_match.url_name == 'reservas_coordinador' %}active{% endif %}"><i data-lucide="calendar-check"></i>Reservas</a>
+                        <a href="{% url 'estudiantes' %}"
+                           class="{% if request.resolver_match.url_name == 'estudiantes' or request.resolver_match.url_name == 'revisar_estudiante' %}active{% endif %}"><i data-lucide="users"></i>Estudiantes</a>
+                        <a href="{% url 'configurar' 'laboratorios' %}"
+                           class="{% if tipo %}active{% endif %}"><i data-lucide="settings-2"></i>Configuración</a>
+                        <a href="{% url 'laboratoristas' %}"
+                           class="{% if request.resolver_match.url_name == 'laboratoristas' or request.resolver_match.url_name == 'crear_laboratorista' or request.resolver_match.url_name == 'editar_laboratorista' or request.resolver_match.url_name == 'clave_laboratorista' %}active{% endif %}"><i data-lucide="user-round-cog"></i>Laboratoristas</a>
+                        <a href="{% url 'agenda_laboratorista' %}"
+                           class="{% if request.resolver_match.url_name == 'agenda_laboratorista' %}active{% endif %}"><i data-lucide="door-open"></i>Préstamos aprobados</a>
+                    {% elif rol_usuario == ROL_LABORATORISTA %}
+                        <a href="{% url 'agenda_laboratorista' %}"
+                           class="{% if request.resolver_match.url_name == 'agenda_laboratorista' %}active{% endif %}"><i data-lucide="door-open"></i>Préstamos aprobados</a>
+                    {% elif rol_usuario == ROL_ESTUDIANTE %}
+                        <a href="{% url 'laboratorios' %}"
+                           class="{% if request.resolver_match.url_name == 'laboratorios' or request.resolver_match.url_name == 'reservar_laboratorio' %}active{% endif %}"><i data-lucide="monitor"></i>Laboratorios</a>
+                        <a href="{% url 'mis_reservas' %}"
+                           class="{% if request.resolver_match.url_name == 'mis_reservas' %}active{% endif %}"><i data-lucide="calendar-check"></i>Mis reservas</a>
+                        <a href="{% url 'mi_perfil' %}"
+                           class="{% if request.resolver_match.url_name == 'mi_perfil' %}active{% endif %}"><i data-lucide="user-round"></i>Mis datos</a>
+                    {% endif %}
+                </nav>
+                <div class="sidebar-bottom">
+                    <span>Coordinación de</span><strong>Telecomunicaciones</strong><small>Bucaramanga, Santander</small>
+                </div>
+            </aside>
+        {% else %}
+            <header class="public-header">
+                <a href="{% url 'login' %}" class="brand-logo-viewport">
+                    <img src="{% static 'img/logo-uts.png' %}"
+                         alt="Unidades Tecnológicas de Santander">
+                </a>
+                <strong>Laboratorios UTS</strong>
+            </header>
+        {% endif %}
+        <div class="workspace-body">
+            {% if user.is_authenticated %}
+                <header class="topbar">
+                    <button type="button"
+                            class="icon-button mobile-menu"
+                            aria-label="Abrir menú"
+                            aria-controls="sidebar"
+                            aria-expanded="false"
+                            id="menu-toggle">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <a href="{% url 'dashboard' %}" class="mobile-brand brand-logo-viewport">
+                        <img src="{% static 'img/logo-uts.png' %}" alt="UTS">
+                    </a>
+                    <span class="topbar-location">Gestión de laboratorios <span>/</span> UTS</span>
+                    <div class="account">
+                        <span>{{ user.get_full_name|default:user.username }}<small>
+                            {% if rol_usuario == ROL_COORDINADOR %}
+                                Coordinador
+                            {% elif rol_usuario == ROL_LABORATORISTA %}
+                                Laboratorista
+                            {% else %}
+                                Estudiante
+                            {% endif %}
+                        </small></span>
+                        <a href="{% url 'cambiar_clave' %}"
+                           class="icon-button"
+                           title="Cambiar contraseña"
+                           aria-label="Cambiar contraseña"><i data-lucide="key-round"></i></a>
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button class="icon-button" title="Cerrar sesión" aria-label="Cerrar sesión">
+                                <i data-lucide="log-out"></i>
+                            </button>
+                        </form>
+                    </div>
+                </header>
+            {% endif %}
+            <main id="contenido" class="content-area">
+                {% if messages %}
+                    <div aria-live="polite">
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags|default:'info' }}" role="status">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% block content %}{% endblock %}
+            </main>
+            <footer class="app-footer">
+                <span>Unidades Tecnológicas de Santander</span><span>Coordinación de Telecomunicaciones</span>
+            </footer>
+        </div>
+        <script src="{% static 'vendor/lucide.min.js' %}"></script>
+        <script src="{% static 'js/app.js' %}" defer></script>
+        {% block scripts %}
+        {% endblock %}
+    </body>
+</html>

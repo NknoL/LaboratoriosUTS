@@ -1,0 +1,45 @@
+{% extends "tutorias/base.html" %}
+{% block title %}Revisar matrícula | Laboratorios UTS{% endblock %}
+{% block content %}
+    <a href="{% url 'estudiantes' %}" class="back-link"><i data-lucide="arrow-left"></i>Estudiantes</a>
+    <header class="page-title">
+        <div>
+            <span class="section-label">Revisión manual de matrícula</span>
+            <h1>{{ estudiante.usuario.get_full_name|default:estudiante.usuario.username }}</h1>
+            <p>{{ estudiante.cedula|default:"Cédula pendiente" }} · {{ estudiante.usuario.email }}</p>
+        </div>
+    </header>
+    <div class="details-strip">
+        <span>{{ estudiante.get_programa_display }} · Semestre {{ estudiante.semestre|default:"Pendiente" }}</span><span>Última revisión: {{ estudiante.revisado_el|date:"d/m/Y H:i"|default:"Sin revisión" }}</span>
+    </div>
+    <form method="post" class="form-surface">
+        {% csrf_token %}
+        {% include "tutorias/fields.html" %}
+        <div class="form-actions">
+            <button class="btn btn-primary">
+                <i data-lucide="check"></i>Guardar revisión
+            </button>
+        </div>
+    </form>
+    <section class="form-surface mt-4" aria-labelledby="titulo-clave">
+        <h2 id="titulo-clave" class="h5">¿Olvidó su contraseña?</h2>
+        <p>
+            Genera una clave temporal para entregársela al estudiante. Al ingresar, deberá cambiarla por una propia.
+            {% if estudiante.debe_cambiar_clave %}
+                <strong>Ya tiene una clave temporal pendiente
+                    {% if estudiante.clave_temporal_expira %}
+                        (vence {{ estudiante.clave_temporal_expira|date:"d/m/Y H:i" }})
+                    {% endif %}
+                .</strong>
+            {% endif %}
+        </p>
+        <form method="post"
+              action="{% url 'clave_temporal' estudiante.pk %}"
+              onsubmit="return confirm('La contraseña actual del estudiante dejará de funcionar. ¿Generar clave temporal?');">
+            {% csrf_token %}
+            <button class="btn btn-outline-secondary">
+                <i data-lucide="key-round"></i>Generar clave temporal
+            </button>
+        </form>
+    </section>
+{% endblock %}

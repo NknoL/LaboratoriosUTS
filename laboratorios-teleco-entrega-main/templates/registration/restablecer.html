@@ -1,0 +1,19 @@
+{% extends "tutorias/base.html" %}
+{% block title %}Restablecer contraseña | UTS{% endblock %}
+{% block content %}
+    <div class="registration-layout">
+        <h1>Nueva contraseña</h1>
+        {% if validlink %}
+            <form method="post" class="form-surface">
+                {% csrf_token %}
+                {% include "tutorias/fields.html" %}
+                <div class="form-actions">
+                    <button class="btn btn-primary">Guardar nueva contraseña</button>
+                </div>
+            </form>
+        {% else %}
+            <div class="alert alert-warning">El enlace no es válido, ya fue utilizado o ha caducado.</div>
+            <a href="{% url 'password_reset' %}" class="btn btn-primary">Solicitar otro enlace</a>
+        {% endif %}
+    </div>
+{% endblock %}

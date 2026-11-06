@@ -1,0 +1,50 @@
+{% extends "tutorias/base.html" %}
+{% block title %}Laboratorios | UTS{% endblock %}
+{% block content %}
+    <header class="page-title">
+        <div>
+            <span class="section-label">Espacios de práctica</span>
+            <h1>Laboratorios</h1>
+            <p>Telecomunicaciones · Reservas por fecha y franja horaria</p>
+        </div>
+        <span class="status success">{{ laboratorios|length }} laboratorios activos</span>
+    </header>
+    {% if rol_usuario == ROL_ESTUDIANTE and not user.perfil.completo %}
+        <div class="alert alert-warning">
+            Completa tus datos de matrícula para confirmar reservas. <a href="{% url 'mi_perfil' %}">Actualizar mis datos</a>
+        </div>
+    {% endif %}
+    <form method="get" class="date-toolbar">
+        <div>
+            <label for="{{ form.fecha.id_for_label }}">Fecha de la práctica</label>
+            {{ form.fecha }}{{ form.fecha.errors }}
+        </div>
+        <button class="btn btn-primary">
+            <i data-lucide="calendar-search"></i>Consultar
+        </button>
+    </form>
+    <div class="lab-grid">
+        {% for lab in laboratorios %}
+            <article class="lab-card lab-tone-{{ forloop.counter }}">
+                <div class="lab-card-top">
+                    <span class="lab-number">{{ forloop.counter|stringformat:"02d" }}</span><i data-lucide="{% if forloop.counter == 1 %}network{% elif forloop.counter == 2 %}radio-tower{% elif forloop.counter == 3 %}router{% elif forloop.counter == 4 %}cpu{% else %}monitor{% endif %}"></i>
+                </div>
+                <div class="lab-card-body">
+                    <h2>{{ lab.nombre }}</h2>
+                    <p>{{ lab.ubicacion|default:"Telecomunicaciones UTS" }}</p>
+                    <div class="lab-capacity">
+                        <i data-lucide="users"></i>{{ lab.capacidad }} estudiantes por franja
+                    </div>
+                    <div class="subject-list">
+                        {% for materia in lab.materias.all %}
+                            {% if materia.activa and materia.tecnica %}<span>{{ materia.nombre }}</span>{% endif %}
+                        {% endfor %}
+                    </div>
+                    <a class="btn btn-outline-primary w-100"
+                       href="{% url 'reservar_laboratorio' lab.pk %}{% if fecha %}?fecha={{ fecha|date:'Y-m-d' }}{% endif %}">Ver disponibilidad<i data-lucide="arrow-right"></i></a>
+                </div>
+            </article>{% empty %}
+            <div class="empty-state">No hay laboratorios habilitados.</div>
+        {% endfor %}
+    </div>
+{% endblock %}

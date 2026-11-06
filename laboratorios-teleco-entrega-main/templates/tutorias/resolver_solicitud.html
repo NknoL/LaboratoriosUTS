@@ -1,0 +1,56 @@
+{% extends "tutorias/base.html" %}
+{% block title %}Revisar solicitud | UTS{% endblock %}
+{% block content %}
+    <a class="back-link" href="{% url 'solicitudes' %}"><i data-lucide="arrow-left"></i>Solicitudes</a>
+    <header class="page-title">
+        <div>
+            <span class="section-label">Préstamo de laboratorio</span>
+            <h1>{{ reserva.laboratorio.nombre }}</h1>
+            <p>
+                {{ reserva.fecha|date:"l d/m/Y" }} · {{ reserva.hora_inicio|time:"H:i" }} - {{ reserva.hora_fin|time:"H:i" }}
+            </p>
+        </div>
+        <span class="status state-{{ reserva.estado }}">{{ reserva.get_estado_display }}</span>
+    </header>
+    <div class="details-strip">
+        <div>
+            <strong>{{ reserva.estudiante.get_full_name|default:reserva.estudiante.username }}</strong>
+            <p class="mb-0">{{ reserva.estudiante.perfil.cedula }} · {{ reserva.estudiante.email }}</p>
+        </div>
+        <div>
+            {{ reserva.materia.nombre }}
+            <p class="mb-0">
+                Semestre {{ reserva.estudiante.perfil.semestre }} · {{ reserva.estudiante.perfil.get_programa_display }}
+            </p>
+        </div>
+    </div>
+    {% if error %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endif %}
+    {% if reserva.estado == "PENDIENTE" %}
+        <form method="post" class="form-surface">
+            {% csrf_token %}
+            <div class="field">
+                <label for="motivo">Observación para el estudiante</label>
+                <textarea id="motivo"
+                          name="motivo"
+                          class="form-control"
+                          rows="3"
+                          maxlength="300">{{ request.POST.motivo }}</textarea>
+                <div class="form-text">Obligatoria para rechazar la solicitud.</div>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-outline-danger" name="decision" value="rechazar">Rechazar</button>
+                <button class="btn btn-primary" name="decision" value="aprobar">
+                    <i data-lucide="check"></i>Aprobar préstamo
+                </button>
+            </div>
+        </form>
+    {% else %}
+        <div class="form-surface">
+            <h2>Decisión registrada</h2>
+            <p>{{ reserva.motivo_decision|default:"Sin observaciones." }}</p>
+            {% if reserva.decidida_por %}
+                <small>{{ reserva.decidida_por.get_full_name|default:reserva.decidida_por.username }} · {{ reserva.decidida_el|date:"d/m/Y H:i" }}</small>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}

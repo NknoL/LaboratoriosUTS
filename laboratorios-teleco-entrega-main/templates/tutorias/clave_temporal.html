@@ -1,0 +1,29 @@
+{% extends "tutorias/base.html" %}
+{% block title %}Clave temporal | Laboratorios UTS{% endblock %}
+{% block content %}
+    <a href="{% url 'revisar_estudiante' estudiante.pk %}" class="back-link"><i data-lucide="arrow-left"></i>Volver al estudiante</a>
+    <header class="page-title">
+        <div>
+            <span class="section-label">Clave temporal generada</span>
+            <h1>{{ estudiante.usuario.get_full_name|default:estudiante.usuario.username }}</h1>
+            <p>Cédula {{ estudiante.cedula|default:"sin registrar" }}</p>
+        </div>
+    </header>
+    <div class="form-surface">
+        <p>
+            Entrega esta clave al estudiante <strong>en persona o por un canal privado</strong>. Se muestra solo esta vez.
+        </p>
+        <p style="font-size:2rem;
+                  font-family:monospace;
+                  letter-spacing:.12em;
+                  margin:1rem 0"
+           aria-label="Clave temporal">{{ clave }}</p>
+        <ul>
+            <li>
+                El estudiante ingresa con su <strong>cédula</strong> y esta clave.
+            </li>
+            <li>Al entrar, el sistema le obliga a crear una contraseña nueva.</li>
+            <li>La clave vence en {{ horas }} horas si no se usa. Su contraseña anterior ya no funciona.</li>
+        </ul>
+    </div>
+{% endblock %}

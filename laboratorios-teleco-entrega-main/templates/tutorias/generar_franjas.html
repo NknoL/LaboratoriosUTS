@@ -1,0 +1,50 @@
+{% extends "tutorias/base.html" %}
+{% block title %}Generar franjas | Laboratorios UTS{% endblock %}
+{% block content %}
+    <a class="back-link"
+       href="{% url 'configurar' 'semestres' %}"><i data-lucide="arrow-left"></i>Configuración</a>
+    <header class="page-title">
+        <div>
+            <span class="section-label">Programación semestral</span>
+            <h1>Generar franjas</h1>
+            <p>09:00 a 18:00 · 45 minutos · Capacidad del laboratorio</p>
+        </div>
+    </header>
+    <form method="post" class="form-surface">
+        {% csrf_token %}
+        {% include "tutorias/fields.html" %}
+        <div class="form-actions">
+            <button class="btn btn-primary"
+                    name="accion"
+                    value="calcular"><i data-lucide="calendar-search"></i>Calcular disponibilidad</button>
+        </div>
+    </form>
+    {% if plan %}
+        <section class="mt-4">
+            <h2>Vista previa: {{ periodo }}</h2>
+            <p>{{ plan.nuevas|length }} nuevas · {{ plan.retirar|length }} por retirar · {{ plan.conservar|length }} sin cambios · {{ plan.manuales|length }} manuales conservadas</p>
+            {% if not periodo.activo %}<p class="alert alert-info">Semestre inactivo: las franjas publicadas no admitirán solicitudes hasta activarlo.</p>{% endif %}
+            {% if plan.otros_periodos %}<p class="alert alert-warning">Las fechas coinciden con otros semestres: {% for p in plan.otros_periodos %}{{ p }}{% if not forloop.last %}, {% endif %}{% endfor %}. Sus clases y franjas activas también se consideran ocupadas.</p>{% endif %}
+            {% for conflicto in plan.conflictos %}<p class="alert alert-danger">{{ conflicto }}</p>{% endfor %}
+            <div class="table-responsive data-surface">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Acción</th>
+                            <th>Laboratorio</th>
+                            <th>Día</th>
+                            <th>Inicio</th>
+                            <th>Fin</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for f in plan.nuevas %}<tr><td>Nueva</td><td>{{ f.laboratorio }}</td><td>{{ f.get_dia_semana_display }}</td><td>{{ f.hora_inicio|time:"H:i" }}</td><td>{{ f.hora_fin|time:"H:i" }}</td></tr>{% endfor %}
+                        {% for f in plan.retirar %}<tr><td>Retirar oferta</td><td>{{ f.laboratorio }}</td><td>{{ f.get_dia_semana_display }}</td><td>{{ f.hora_inicio|time:"H:i" }}</td><td>{{ f.hora_fin|time:"H:i" }}</td></tr>{% endfor %}
+                        {% if not plan.nuevas and not plan.retirar %}<tr><td colspan="5">No hay cambios para publicar con la programación y los bloqueos actuales.</td></tr>{% endif %}
+                    </tbody>
+                </table>
+            </div>
+            {% if token and not plan.conflictos %}<form method="post" class="form-actions mt-3">{% csrf_token %}<input type="hidden" name="accion" value="publicar"><input type="hidden" name="token" value="{{ token }}"><button class="btn btn-primary"><i data-lucide="calendar-check"></i>Publicar franjas</button></form>{% endif %}
+        </section>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,19 @@
+[Unit]
+Description=Laboratorios UTS - comprobacion de base y cola
+After=laboratorios.service
+
+[Service]
+Type=oneshot
+User=laboratorios
+Group=laboratorios
+WorkingDirectory=/srv/laboratorios
+EnvironmentFile=/etc/laboratorios/laboratorios.env
+Environment=UTS_ENV_FILE=/etc/laboratorios/laboratorios.env
+Environment=DJANGO_ENV=production
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/srv/laboratorios/venv/bin/python manage.py comprobar_operacion
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+UMask=0077

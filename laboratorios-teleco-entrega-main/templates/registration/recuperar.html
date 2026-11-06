@@ -1,0 +1,21 @@
+{% extends "tutorias/base.html" %}
+{% block title %}Recuperar contraseña | UTS{% endblock %}
+{% block content %}
+    <div class="registration-layout">
+        <header class="page-title">
+            <div>
+                <span class="section-label">Acceso estudiantil</span>
+                <h1>Recuperar contraseña</h1>
+                <p>Solicita un enlace a tu correo registrado. Es válido durante 1 hora.</p>
+            </div>
+        </header>
+        <form method="post" class="form-surface">
+            {% csrf_token %}
+            {% include "tutorias/fields.html" %}
+            <div class="form-actions">
+                <a href="{% url 'login' %}" class="btn btn-outline-primary">Volver</a>
+                <button class="btn btn-primary">Enviar enlace</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

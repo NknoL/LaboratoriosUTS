@@ -1,0 +1,31 @@
+{% extends "tutorias/base.html" %}
+{% block title %}Cambiar contraseña | Laboratorios UTS{% endblock %}
+{% block content %}
+    <header class="page-title">
+        <div>
+            <span class="section-label">Seguridad de la cuenta</span>
+            <h1>Cambiar contraseña</h1>
+            <p>
+                {% if obligatorio %}
+                    Ingresaste con una clave temporal. Para continuar, elige una contraseña nueva que solo tú conozcas.
+                {% else %}
+                    Escribe tu contraseña actual y la nueva.
+                {% endif %}
+            </p>
+        </div>
+    </header>
+    {% if obligatorio %}
+        <div class="alert alert-warning" role="status">
+            Debes cambiar la clave temporal antes de usar el aplicativo.
+        </div>
+    {% endif %}
+    <form method="post" class="form-surface">
+        {% csrf_token %}
+        {% include "tutorias/fields.html" %}
+        <div class="form-actions">
+            <button class="btn btn-primary">
+                <i data-lucide="key-round"></i>Guardar contraseña
+            </button>
+        </div>
+    </form>
+{% endblock %}

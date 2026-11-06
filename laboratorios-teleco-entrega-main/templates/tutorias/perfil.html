@@ -1,0 +1,22 @@
+{% extends "tutorias/base.html" %}
+{% block title %}Mis datos | Laboratorios UTS{% endblock %}
+{% block content %}
+    <header class="page-title">
+        <div>
+            <span class="section-label">Cuenta estudiantil</span>
+            <h1>Mis datos</h1>
+            <p>
+                Revisión de matrícula: {{ user.perfil.get_revision_display }}. Puedes reservar durante la revisión.
+            </p>
+        </div>
+    </header>
+    <form method="post" class="form-surface">
+        {% csrf_token %}
+        {% include "tutorias/fields.html" %}
+        <div class="form-actions">
+            <button class="btn btn-primary">
+                <i data-lucide="save"></i>Guardar datos
+            </button>
+        </div>
+    </form>
+{% endblock %}

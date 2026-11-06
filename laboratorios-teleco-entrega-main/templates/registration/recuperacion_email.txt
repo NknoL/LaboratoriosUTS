@@ -1,0 +1,9 @@
+Se solicitó restablecer la contraseña de tu cuenta de Laboratorios UTS.
+
+Abre este enlace para elegir una nueva contraseña:
+{{ protocol }}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}
+
+El enlace vence en 1 hora y deja de funcionar una vez cambias tu contraseña.
+Si no solicitaste este cambio, ignora este correo. Tu contraseña seguirá siendo la misma.
+
+Coordinación de Telecomunicaciones

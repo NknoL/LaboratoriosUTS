@@ -1,0 +1,79 @@
+{% extends "tutorias/base.html" %}
+{% load static %}
+{% block title %}{{ lab.nombre }} | UTS{% endblock %}
+{% block content %}
+    <a href="{% url 'laboratorios' %}" class="back-link"><i data-lucide="arrow-left"></i>Laboratorios</a>
+    <header class="page-title">
+        <div>
+            <span class="section-label">Reserva de espacio</span>
+            <h1>{{ lab.nombre }}</h1>
+            <p>{{ lab.ubicacion|default:"Telecomunicaciones UTS" }}</p>
+        </div>
+        <span class="status success">Capacidad: {{ lab.capacidad }}</span>
+    </header>
+    {% if rol_usuario == ROL_ESTUDIANTE and not user.perfil.completo %}
+        <div class="alert alert-warning">
+            Completa <a href="{% url 'mi_perfil' %}">tus datos</a> para confirmar una reserva.
+        </div>
+    {% endif %}
+    <form method="get" class="booking-filters" id="availability-filter">
+        <div class="field">
+            <label for="materia">Materia</label>
+            <select class="form-select" name="materia" id="materia" required>
+                <option value="">Selecciona una materia</option>
+                {% for item in materias %}
+                    <option value="{{ item.pk }}"
+                            {% if materia.pk == item.pk %}selected{% endif %}>
+                        {{ item.nombre }} · {{ item.get_nivel_display }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="field">
+            <label for="{{ form.fecha.id_for_label }}">Fecha</label>
+            {{ form.fecha }}{{ form.fecha.errors }}
+        </div>
+        <button class="btn btn-primary">
+            <i data-lucide="search"></i>Consultar franjas
+        </button>
+    </form>
+    <section id="availability"
+             data-url="{% url 'disponibilidad' lab.pk %}"
+             data-confirm-url="{% url 'confirmar_reserva' %}"
+             data-date="{% if fecha %}{{ fecha|date:'Y-m-d' }}{% endif %}"
+             data-subject="{{ materia.pk|default:'' }}">
+        <div class="section-heading">
+            <h2>Franjas horarias</h2>
+            <span id="availability-status" role="status" aria-live="polite">
+                {% if materia and fecha %}
+                    Consultando…
+                {% else %}
+                    Selecciona una materia y fecha
+                {% endif %}
+            </span>
+        </div>
+        <div id="booking-message" role="alert" hidden></div>
+        <form id="booking-form">
+            {% csrf_token %}
+            <div class="slot-grid" id="slot-list"></div>
+        </form>
+    </section>
+    <dialog id="booking-dialog">
+        <form method="dialog">
+            <button class="icon-button dialog-close" aria-label="Cerrar">
+                <i data-lucide="x"></i>
+            </button>
+        </form>
+        <span class="section-label">Solicitud de préstamo</span>
+        <h2>{{ lab.nombre }}</h2>
+        <p id="booking-summary"></p>
+        <p>Tu cupo quedará apartado mientras el coordinador revisa la solicitud.</p>
+        <div class="dialog-actions">
+            <button id="booking-back" type="button" class="btn btn-outline-primary">Volver</button>
+            <button id="booking-confirm" type="button" class="btn btn-primary">Enviar solicitud</button>
+        </div>
+    </dialog>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'js/reservas.js' %}" defer></script>
+{% endblock %}

@@ -1,0 +1,10 @@
+[Unit]
+Description=Revisar Laboratorios UTS cada cinco minutos
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+Unit=laboratorios-comprobacion.service
+
+[Install]
+WantedBy=timers.target

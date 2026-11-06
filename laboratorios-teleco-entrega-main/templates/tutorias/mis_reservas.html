@@ -1,0 +1,62 @@
+{% extends "tutorias/base.html" %}
+{% load static %}
+{% block title %}Mis reservas | Laboratorios UTS{% endblock %}
+{% block content %}
+    <header class="page-title">
+        <div>
+            <span class="section-label">Agenda estudiantil</span>
+            <h1>Mis reservas</h1>
+            <p>Solicitudes de préstamo e historial</p>
+        </div>
+        <a class="btn btn-primary" href="{% url 'laboratorios' %}"><i data-lucide="plus"></i>Nueva solicitud</a>
+    </header>
+    <p id="reservation-updates" role="status" aria-live="polite"></p>
+    <div class="table-responsive data-surface"
+         id="reservation-history"
+         data-url="{% url 'estados_reservas' %}">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Laboratorio / materia</th>
+                    <th>Fecha</th>
+                    <th>Horario</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reserva in reservas %}
+                    <tr data-reservation="{{ reserva.pk }}" data-state="{{ reserva.estado }}">
+                        <td>
+                            <strong>{{ reserva.laboratorio.nombre }}</strong><small>{{ reserva.materia.nombre }}</small>
+                        </td>
+                        <td>{{ reserva.fecha|date:"d/m/Y" }}</td>
+                        <td class="nowrap">{{ reserva.hora_inicio|time:"H:i" }} - {{ reserva.hora_fin|time:"H:i" }}</td>
+                        <td>
+                            <span class="status state-{{ reserva.estado }}">{{ reserva.get_estado_display }}</span><small class="decision-reason">{{ reserva.motivo_decision }}</small>
+                        </td>
+                        <td>
+                            {% if reserva.cancelable %}
+                                <form method="post"
+                                      action="{% url 'cancelar_reserva' reserva.pk %}"
+                                      data-confirm="¿Cancelar esta solicitud y liberar tu cupo?">
+                                    {% csrf_token %}
+                                    <button class="btn btn-outline-danger btn-sm">Cancelar</button>
+                                </form>
+                            {% else %}
+                                <span class="text-secondary">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="empty-state">Todavía no tienes reservas.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'js/estados.js' %}" defer></script>
+{% endblock %}

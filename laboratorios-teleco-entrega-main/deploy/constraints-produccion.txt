@@ -1,0 +1,12 @@
+# Versiones de entrega, incluidas dependencias transitivas; validar tambien en Linux.
+# Gunicorn no se ejecuta en Windows. Revisar estas versiones en cada actualizacion.
+Django==5.2.17
+dj-database-url==3.1.2
+mysqlclient==2.3.0
+whitenoise==6.12.0
+gunicorn==23.0.0
+django-axes==8.3.1
+asgiref==3.12.1
+sqlparse==0.6.0
+tzdata==2026.4
+packaging==26.3
